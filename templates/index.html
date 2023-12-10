@@ -1,28 +1,73 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-    <title>Google Ranking Checker</title>
+    <title>Rank Checker</title>
+    <!-- <script>
+        function clearResults() {
+            // Get the element where rankings are displayed
+            var resultsDiv = document.getElementById("results");
+
+            // Clear the content inside the results element
+            resultsDiv.innerHTML = "";
+        }
+
+        function clearAllOutput() {
+            // Clear rankings
+            clearResults();
+
+            // Clear other messages
+            document.getElementById("emptyFileMessage").innerHTML = "";
+            document.getElementById("emptyDataMessage").innerHTML = "";
+        }
+    </script> -->
 </head>
+
 <body>
-    <h1>Google Ranking Checker</h1>
-
-    <form action="/check_rankings" method="post" enctype="multipart/form-data">
-        <label for="excel_file">Upload an Excel file with keywords:</label>
-        <input type="file" id="excel_file" name="excel_file" accept=".xlsx" required><br><br>
-
-        <label for="website_url">Enter your website URL:</label>
-        <input type="text" id="website_url" name="website_url" required><br><br>
-
+    <h1>Check Rankings</h1>
+    <form action="/check_rankings" method="post" enctype="multipart/form-data" onsubmit="clearResults()">
+        <input type="file" name="excel_file" onchange="clearResults()">
+        <input type="text" name="website_url" placeholder="Enter Website URL">
         <button type="submit">Check Rankings</button>
+        <!-- Button to clear all output -->
+        <!-- <button type="button" onclick="clearAllOutput()">Clear All Output</button> -->
     </form>
+
 
     {% if rankings %}
     <h2>Rankings:</h2>
-    <ul>
-        {% for rank in rankings %}
-        <li>Keyword: {{ rank['Keyword'] }}, Rank: {{ rank['Rank'] }}, URL: {{ rank['URL'] }}</li>
-        {% endfor %}
-    </ul>
+    <table>
+        <thead>
+            <tr>
+                <th>Keywords</th>
+                <th>Rank</th>
+                <th>URL</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for rank in rankings %}
+            <tr>
+                <td>{{ rank['Keywords'] }}</td>
+                <td>{{ rank['Rank'] }}</td>
+                <td>{{ rank['URL'] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- ... (other HTML code remains unchanged) -->
+
+    {% if empty_file_message %}
+    <!-- Display a message if the uploaded file is empty -->
+    <p>{{ empty_file_message }}</p>
+    {% elif empty_data_message %}
+    <!-- Display a message if no data is found after processing -->
+    <p>{{ empty_data_message }}</p>
+    {% else %}
+    <!-- ... (table and rankings display code) -->
+    <!-- <p>Rankings have been saved to output_rankings.xlsx.</p>
+    {% endif %} -->
     {% endif %}
 </body>
+
 </html>

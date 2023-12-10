@@ -1,4 +1,4 @@
-# finding rank of pages in domain url by getting keywords using excel file
+# finding rank of pages in given url by getting keywords using excel file and store in excel file
 
 from flask import Flask, render_template, request
 from selenium import webdriver
@@ -62,9 +62,31 @@ def check_rankings():
 
     # Read keywords from the uploaded Excel file
     df = pd.read_excel(excel_file)
+
+    # Check if the DataFrame is empty
+    if df.empty:
+        return render_template('index.html', empty_file_message="The uploaded Excel file is empty. Please upload a file with data.")
+
     keywords = df['keywords'].tolist()
 
     rankings = get_google_rankings(keywords, website_url)
+
+    # Check if rankings are empty after processing
+    if not rankings:
+        return render_template('index.html', empty_data_message="No data found for the provided keywords and website URL.")
+
+    # Create a DataFrame from the rankings
+    output_df = pd.DataFrame(rankings)
+
+    # Define the path for the output Excel file
+    output_file_path = 'output_rankings.xlsx'
+
+    # Check if the file exists, delete it to avoid appending to existing data
+    if os.path.exists(output_file_path):
+        os.remove(output_file_path)
+
+    # Write the rankings to a new Excel file
+    output_df.to_excel(output_file_path, index=False)
 
     return render_template('index.html', rankings=rankings)
 
